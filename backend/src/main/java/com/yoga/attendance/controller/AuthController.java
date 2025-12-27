@@ -17,6 +17,15 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
+    @GetMapping("/health")
+    public ResponseEntity<?> health() {
+        return ResponseEntity.ok(Map.of(
+            "status", "UP",
+            "service", "yoga-attendance-api",
+            "timestamp", System.currentTimeMillis()
+        ));
+    }
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request,
             @RequestHeader(value = "User-Agent", required = false) String userAgent,
