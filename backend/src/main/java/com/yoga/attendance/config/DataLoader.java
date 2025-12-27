@@ -4,6 +4,7 @@ import com.yoga.attendance.entity.User;
 import com.yoga.attendance.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Component
+@Order(2)
 public class DataLoader implements CommandLineRunner {
 
     @Autowired
