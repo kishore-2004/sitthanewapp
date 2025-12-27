@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import jakarta.mail.MessagingException;
@@ -18,6 +19,7 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String fromEmail;
 
+    @Async
     public boolean sendVerificationOtp(String to, String otp) {
         System.out.println("\n=== EMAIL VERIFICATION OTP ===");
         System.out.println("To: " + to);
@@ -42,6 +44,7 @@ public class EmailService {
         }
     }
 
+    @Async
     public boolean sendPasswordResetOtp(String to, String otp) {
         System.out.println("\n=== PASSWORD RESET OTP ===");
         System.out.println("To: " + to);
