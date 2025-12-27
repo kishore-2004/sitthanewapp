@@ -23,15 +23,18 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) throws Exception {
         System.out.println("\n🔄 Initializing default users for Railway deployment...\n");
 
-        // Create Super Admin (ADMIN role)
-        if (!userRepository.findByUsername("superadmin").isPresent()) {
+        // Create or Update Super Admin (ADMIN role)
+        Optional<User> superAdminOpt = userRepository.findByUsername("superadmin");
+        String superAdminPassword = "SuperAdmin@2025";
+        
+        if (superAdminOpt.isEmpty()) {
+            // Create new super admin
             User superAdmin = new User();
             superAdmin.setName("System Administrator");
             superAdmin.setUsername("superadmin");
             superAdmin.setEmail("admin@sitthaviruthi.com");
             superAdmin.setPhone("9876543210");
-            String rawPassword = "SuperAdmin@2025";
-            superAdmin.setPassword(passwordEncoder.encode(rawPassword));
+            superAdmin.setPassword(passwordEncoder.encode(superAdminPassword));
             superAdmin.setRole(User.Role.ADMIN);
             superAdmin.setLevel(1);
             superAdmin.setMonthsCompleted(0);
@@ -42,23 +45,38 @@ public class DataLoader implements CommandLineRunner {
             System.out.println("========================================");
             System.out.println("✅ SUPER ADMIN CREATED");
             System.out.println("Username: superadmin");
-            System.out.println("Password: " + rawPassword);
+            System.out.println("Password: " + superAdminPassword);
             System.out.println("Role: ADMIN");
             System.out.println("Email: admin@sitthaviruthi.com");
             System.out.println("========================================\n");
         } else {
-            System.out.println("ℹ️  Super admin already exists\n");
+            // Update existing super admin password
+            User existingSuperAdmin = superAdminOpt.get();
+            existingSuperAdmin.setPassword(passwordEncoder.encode(superAdminPassword));
+            existingSuperAdmin.setRole(User.Role.ADMIN);
+            existingSuperAdmin.setApproved(true);
+            existingSuperAdmin.setEmailVerified(true);
+            userRepository.save(existingSuperAdmin);
+            System.out.println("========================================");
+            System.out.println("🔄 SUPER ADMIN PASSWORD RESET");
+            System.out.println("Username: superadmin");
+            System.out.println("Password: " + superAdminPassword);
+            System.out.println("Role: ADMIN");
+            System.out.println("========================================\n");
         }
 
-        // Create Regular User (USER role)
-        if (!userRepository.findByUsername("testuser").isPresent()) {
+        // Create or Update Regular User (USER role)
+        Optional<User> testUserOpt = userRepository.findByUsername("testuser");
+        String testUserPassword = "TestUser@2025";
+        
+        if (testUserOpt.isEmpty()) {
+            // Create new test user
             User user = new User();
             user.setName("Test User");
             user.setUsername("testuser");
             user.setEmail("user@sitthaviruthi.com");
             user.setPhone("9123456780");
-            String rawPassword = "TestUser@2025";
-            user.setPassword(passwordEncoder.encode(rawPassword));
+            user.setPassword(passwordEncoder.encode(testUserPassword));
             user.setRole(User.Role.USER);
             user.setLevel(1);
             user.setMonthsCompleted(0);
@@ -69,12 +87,24 @@ public class DataLoader implements CommandLineRunner {
             System.out.println("========================================");
             System.out.println("✅ TEST USER CREATED");
             System.out.println("Username: testuser");
-            System.out.println("Password: " + rawPassword);
+            System.out.println("Password: " + testUserPassword);
             System.out.println("Role: USER");
             System.out.println("Email: user@sitthaviruthi.com");
             System.out.println("========================================\n");
         } else {
-            System.out.println("ℹ️  Test user already exists\n");
+            // Update existing test user password
+            User existingTestUser = testUserOpt.get();
+            existingTestUser.setPassword(passwordEncoder.encode(testUserPassword));
+            existingTestUser.setRole(User.Role.USER);
+            existingTestUser.setApproved(true);
+            existingTestUser.setEmailVerified(true);
+            userRepository.save(existingTestUser);
+            System.out.println("========================================");
+            System.out.println("🔄 TEST USER PASSWORD RESET");
+            System.out.println("Username: testuser");
+            System.out.println("Password: " + testUserPassword);
+            System.out.println("Role: USER");
+            System.out.println("========================================\n");
         }
 
         System.out.println("✨ User initialization complete!\n");
