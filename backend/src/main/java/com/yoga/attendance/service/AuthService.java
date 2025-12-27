@@ -179,24 +179,11 @@ public class AuthService {
         user.setResetOtpExpiry(java.time.LocalDateTime.now().plusMinutes(10));
         userRepository.save(user);
 
+        // Send email (mocked or real)
+        // In production, DO NOT print OTP to console logs if avoidable, but we'll
+        // remove it from response
         System.out.println("Processing password reset for: " + email);
-        
-        // Try to send email and check if it succeeds
-        boolean emailSent = emailService.sendPasswordResetOtp(email, otp);
-        
-        if (!emailSent) {
-            // Email failed - print OTP to console for development/testing
-            System.out.println("\n╔════════════════════════════════════╗");
-            System.out.println("║  EMAIL FAILED - CONSOLE OTP        ║");
-            System.out.println("╠════════════════════════════════════╣");
-            System.out.println("║  Email: " + email);
-            System.out.println("║  Reset OTP: " + otp);
-            System.out.println("║  Valid for: 10 minutes             ║");
-            System.out.println("╚════════════════════════════════════╝\n");
-            
-            // In production, you might want to throw an error instead
-            // throw new RuntimeException("Unable to send reset email. Please contact support.");
-        }
+        emailService.sendPasswordResetOtp(email, otp); // Ensure this method exists and sends email
 
         return Map.of("message", "If this email exists, a reset link has been sent.");
     }
