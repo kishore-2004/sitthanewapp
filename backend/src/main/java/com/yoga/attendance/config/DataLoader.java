@@ -21,40 +21,16 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Create admin user if not exists
-        if (!userRepository.findByUsername("admin").isPresent()) {
-            User admin = new User();
-            admin.setName("Super Admin");
-            admin.setUsername("admin");
-            admin.setEmail("admin@yoga.com");
-            admin.setPhone("1234567890");
-            String rawPassword = "Admin@123";
-            admin.setPassword(passwordEncoder.encode(rawPassword));
-            admin.setRole(User.Role.ADMIN);
-            admin.setLevel(1);
-            admin.setMonthsCompleted(0);
-            admin.setCreatedAt(LocalDateTime.now());
-            admin.setApproved(true);
-            admin.setEmailVerified(true);
-            userRepository.save(admin);
-            System.out.println("\n========================================");
-            System.out.println("ADMIN USER CREATED");
-            System.out.println("Username: admin");
-            System.out.println("Password: " + rawPassword);
-            System.out.println("========================================\n");
-        } else {
-            System.out.println("Admin user already exists");
-        }
+        System.out.println("\n🔄 Initializing default users for Railway deployment...\n");
 
-        // Create or Update superadmin user
-        Optional<User> superAdminOpt = userRepository.findByUsername("superadmin");
-        if (superAdminOpt.isEmpty()) {
+        // Create Super Admin (ADMIN role)
+        if (!userRepository.findByUsername("superadmin").isPresent()) {
             User superAdmin = new User();
-            superAdmin.setName("Super Admin");
+            superAdmin.setName("System Administrator");
             superAdmin.setUsername("superadmin");
-            superAdmin.setEmail("superadmin@yoga.com");
-            superAdmin.setPhone("1234567891");
-            String rawPassword = "Admin@123";
+            superAdmin.setEmail("admin@sitthaviruthi.com");
+            superAdmin.setPhone("9876543210");
+            String rawPassword = "SuperAdmin@2025";
             superAdmin.setPassword(passwordEncoder.encode(rawPassword));
             superAdmin.setRole(User.Role.ADMIN);
             superAdmin.setLevel(1);
@@ -63,35 +39,25 @@ public class DataLoader implements CommandLineRunner {
             superAdmin.setApproved(true);
             superAdmin.setEmailVerified(true);
             userRepository.save(superAdmin);
-            System.out.println("\n========================================");
-            System.out.println("SUPERADMIN USER CREATED");
+            System.out.println("========================================");
+            System.out.println("✅ SUPER ADMIN CREATED");
             System.out.println("Username: superadmin");
             System.out.println("Password: " + rawPassword);
+            System.out.println("Role: ADMIN");
+            System.out.println("Email: admin@sitthaviruthi.com");
             System.out.println("========================================\n");
         } else {
-            User existingSuperAdmin = superAdminOpt.get();
-            String rawPassword = "Admin@123";
-            existingSuperAdmin.setPassword(passwordEncoder.encode(rawPassword));
-            // Ensure permissions are correct too
-            existingSuperAdmin.setRole(User.Role.ADMIN);
-            existingSuperAdmin.setApproved(true);
-            userRepository.save(existingSuperAdmin);
-            
-            System.out.println("\n========================================");
-            System.out.println("SUPERADMIN USER FOUND & PASSWORD UPDATED");
-            System.out.println("Username: superadmin");
-            System.out.println("Password: " + rawPassword);
-            System.out.println("========================================\n");
+            System.out.println("ℹ️  Super admin already exists\n");
         }
 
-        // Create regular user if not exists
-        if (!userRepository.findByUsername("user").isPresent()) {
+        // Create Regular User (USER role)
+        if (!userRepository.findByUsername("testuser").isPresent()) {
             User user = new User();
             user.setName("Test User");
-            user.setUsername("user");
-            user.setEmail("user@yoga.com");
-            user.setPhone("9876543210");
-            String rawPassword = "Admin@123";
+            user.setUsername("testuser");
+            user.setEmail("user@sitthaviruthi.com");
+            user.setPhone("9123456780");
+            String rawPassword = "TestUser@2025";
             user.setPassword(passwordEncoder.encode(rawPassword));
             user.setRole(User.Role.USER);
             user.setLevel(1);
@@ -100,13 +66,17 @@ public class DataLoader implements CommandLineRunner {
             user.setApproved(true);
             user.setEmailVerified(true);
             userRepository.save(user);
-            System.out.println("\n========================================");
-            System.out.println("REGULAR USER CREATED");
-            System.out.println("Username: user");
+            System.out.println("========================================");
+            System.out.println("✅ TEST USER CREATED");
+            System.out.println("Username: testuser");
             System.out.println("Password: " + rawPassword);
+            System.out.println("Role: USER");
+            System.out.println("Email: user@sitthaviruthi.com");
             System.out.println("========================================\n");
         } else {
-            System.out.println("Regular user already exists");
+            System.out.println("ℹ️  Test user already exists\n");
         }
+
+        System.out.println("✨ User initialization complete!\n");
     }
 }
