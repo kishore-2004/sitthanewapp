@@ -24,7 +24,9 @@ public class AuthController {
         try {
             return ResponseEntity.ok(authService.login(request, userAgent, ipAddress));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Authentication failed"));
+            System.err.println("Login error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 
