@@ -19,7 +19,6 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String fromEmail;
 
-    @Async
     public boolean sendVerificationOtp(String to, String otp) {
         System.out.println("\n=== EMAIL VERIFICATION OTP ===");
         System.out.println("To: " + to);
@@ -44,7 +43,6 @@ public class EmailService {
         }
     }
 
-    @Async
     public boolean sendPasswordResetOtp(String to, String otp) {
         System.out.println("\n=== PASSWORD RESET OTP ===");
         System.out.println("To: " + to);

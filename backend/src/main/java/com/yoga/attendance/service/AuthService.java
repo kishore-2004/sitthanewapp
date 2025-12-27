@@ -187,10 +187,16 @@ public class AuthService {
         System.out.println("Expires: " + user.getResetOtpExpiry());
         System.out.println("========================================\n");
 
-        // Send email asynchronously
-        emailService.sendPasswordResetOtp(email, otp);
+        // Send email synchronously and check if it was successful
+        boolean emailSent = emailService.sendPasswordResetOtp(email, otp);
+        
+        if (!emailSent) {
+            System.err.println("❌ Failed to send password reset email to: " + email);
+            throw new RuntimeException("Failed to send reset email. Please check your email address and try again.");
+        }
 
-        return Map.of("message", "If this email exists, a reset link has been sent.");
+        System.out.println("✅ Password reset email sent successfully to: " + email);
+        return Map.of("message", "Password reset OTP has been sent to your email.");
     }
 
 
