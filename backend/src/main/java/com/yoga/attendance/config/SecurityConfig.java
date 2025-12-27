@@ -32,10 +32,9 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/health", "/api/v1/user/reset-password", "/api/v1/auth/**", "/api/v1/fix/**",
+                        .requestMatchers("/", "/health", "/api/health/**", "/api/v1/user/reset-password", "/api/v1/auth/**", "/api/v1/fix/**",
                                 "/uploads/**", "/swagger-ui/**", "/api-docs/**", "/swagger-ui.html")
-                        .permitAll() // Allow auth, fix & uploads
-                        // endpoints
+                        .permitAll() // Allow auth, fix, health & uploads endpoints
                         .requestMatchers("/api/v1/auth/delete-user/**", "/api/v1/auth/pending-users",
                                 "/api/v1/auth/approve-user/**")
                         .hasRole("ADMIN")
