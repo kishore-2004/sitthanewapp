@@ -179,25 +179,50 @@ public class AuthService {
         user.setResetOtpExpiry(java.time.LocalDateTime.now().plusMinutes(10));
         userRepository.save(user);
 
-        // Send email (mocked or real)
-        // In production, DO NOT print OTP to console logs if avoidable, but we'll
-        // remove it from response
-        System.out.println("Processing password reset for: " + email);
-        emailService.sendPasswordResetOtp(email, otp); // Ensure this method exists and sends email
+        // Log OTP for debugging (remove in production)
+        System.out.println("\n========================================");
+        System.out.println("PASSWORD RESET OTP GENERATED");
+        System.out.println("Email: " + email);
+        System.out.println("OTP: " + otp);
+        System.out.println("Expires: " + user.getResetOtpExpiry());
+        System.out.println("========================================\n");
+
+        // Send email asynchronously
+        emailService.sendPasswordResetOtp(email, otp);
 
         return Map.of("message", "If this email exists, a reset link has been sent.");
     }
 
+
     public Map<String, String> resetPassword(String email, String otp, String newPassword) {
+        System.out.println("\n=== PASSWORD RESET ATTEMPT ===");
+        System.out.println("Email: " + email);
+        System.out.println("OTP provided: " + otp);
+        
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Email not found"));
+                .orElseThrow(() -> {
+                    System.err.println("❌ Email not found: " + email);
+                    return new RuntimeException("Email not found");
+                });
+
+        System.out.println("User found: " + user.getUsername());
+        System.out.println("Stored OTP: " + user.getResetOtp());
+        System.out.println("OTP Expiry: " + user.getResetOtpExpiry());
 
         if (user.getResetOtp() == null || !user.getResetOtp().equals(otp)) {
+            System.err.println("❌ Invalid OTP");
             throw new RuntimeException("Invalid OTP");
         }
 
         if (user.getResetOtpExpiry().isBefore(java.time.LocalDateTime.now())) {
+            System.err.println("❌ OTP expired");
             throw new RuntimeException("OTP expired");
+        }
+
+        // Validate new password
+        if (newPassword == null || newPassword.length() < 8) {
+            System.err.println("❌ Password too short");
+            throw new RuntimeException("Password must be at least 8 characters");
         }
 
         user.setPassword(passwordEncoder.encode(newPassword));
@@ -205,8 +230,12 @@ public class AuthService {
         user.setResetOtpExpiry(null);
         userRepository.save(user);
 
+        System.out.println("✅ Password reset successful for: " + email);
+        System.out.println("==============================\n");
+
         return Map.of("message", "Password reset successful");
     }
+
 
     @Transactional
     public Map<String, String> deleteUser(String username) {
