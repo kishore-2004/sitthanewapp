@@ -22,7 +22,12 @@
       "assets/fonts/**"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to upload images.",
+        "NSCameraUsageDescription": "This app needs access to your camera to take photos.",
+        "NSPhotoLibraryAddUsageDescription": "This app needs permission to save photos to your library."
+      }
     },
     "android": {
       "package": "com.sitthaviruthi.yoga",
@@ -34,7 +39,11 @@
         "INTERNET",
         "ACCESS_NETWORK_STATE",
         "RECEIVE_BOOT_COMPLETED",
-        "VIBRATE"
+        "VIBRATE",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "CAMERA",
+        "READ_MEDIA_IMAGES"
       ],
       "enableProguardInReleaseBuilds": true,
       "enableShrinkResourcesInReleaseBuilds": true,
@@ -42,13 +51,20 @@
       "usesCleartextTraffic": true
     },
     "scheme": "myapp",
+    "plugins": [
+      "expo-video",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app needs access to your photos to upload images.",
+          "cameraPermission": "The app needs access to your camera to take photos."
+        }
+      ]
+    ],
     "extra": {
       "eas": {
-        "projectId": "cabc6986-08fa-4b9e-b76c-8456828b6442"
+        "projectId": "d4577853-5249-4ffc-88a5-52230d569ec2"
       }
-    },
-    "plugins": [
-      "expo-video"
-    ]
+    }
   }
 }
