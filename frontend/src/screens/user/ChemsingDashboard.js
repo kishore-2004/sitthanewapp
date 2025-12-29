@@ -138,7 +138,7 @@ export default function ChemsingDashboard({ navigation, route }) {
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
-        alert('Sorry, we need camera roll permissions to make this work!');
+        Alert.alert('Permission Required', 'Please enable photo library permissions in your device settings to upload images.');
         return;
       }
 
@@ -463,7 +463,7 @@ export default function ChemsingDashboard({ navigation, route }) {
       console.log('Permission status:', status);
 
       if (status !== 'granted') {
-        Alert.alert('Permission needed', 'Sorry, we need camera roll permissions to make this work!');
+        Alert.alert('Permission Required', 'Please enable photo library permissions in your device settings to upload images.');
         return;
       }
 

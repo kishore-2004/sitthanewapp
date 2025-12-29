@@ -2,30 +2,22 @@ import * as ImagePicker from 'expo-image-picker';
 import { Alert, Platform, Linking } from 'react-native';
 
 /**
- * Request camera and media library permissions
+ * Request media library permission for gallery access
  */
-export const requestImagePermissions = async () => {
+export const requestMediaLibraryPermission = async () => {
   try {
-    const cameraPermission = await ImagePicker.getCameraPermissionsAsync();
     const mediaPermission = await ImagePicker.getMediaLibraryPermissionsAsync();
-    
-    let cameraStatus = cameraPermission.status;
     let mediaStatus = mediaPermission.status;
-    
-    if (cameraStatus !== 'granted') {
-      const { status } = await ImagePicker.requestCameraPermissionsAsync();
-      cameraStatus = status;
-    }
-    
+
     if (mediaStatus !== 'granted') {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       mediaStatus = status;
     }
-    
-    if (cameraStatus !== 'granted' || mediaStatus !== 'granted') {
+
+    if (mediaStatus !== 'granted') {
       Alert.alert(
         'Permission Required',
-        'Please enable camera and photo library permissions in your device settings to upload images.',
+        'Please enable photo library permissions in your device settings to upload images.',
         [
           { text: 'Cancel', style: 'cancel' },
           { text: 'Open Settings', onPress: () => Linking.openSettings() }
@@ -35,8 +27,40 @@ export const requestImagePermissions = async () => {
     }
     return true;
   } catch (error) {
-    console.error('Permission error:', error);
-    Alert.alert('Error', 'Failed to request permissions. Please try again.');
+    console.error('Media library permission error:', error);
+    Alert.alert('Error', 'Failed to request media library permission. Please try again.');
+    return false;
+  }
+};
+
+/**
+ * Request camera permission for camera access
+ */
+export const requestCameraPermission = async () => {
+  try {
+    const cameraPermission = await ImagePicker.getCameraPermissionsAsync();
+    let cameraStatus = cameraPermission.status;
+
+    if (cameraStatus !== 'granted') {
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      cameraStatus = status;
+    }
+
+    if (cameraStatus !== 'granted') {
+      Alert.alert(
+        'Permission Required',
+        'Please enable camera permissions in your device settings to take photos.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Open Settings', onPress: () => Linking.openSettings() }
+        ]
+      );
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error('Camera permission error:', error);
+    Alert.alert('Error', 'Failed to request camera permission. Please try again.');
     return false;
   }
 };
@@ -45,7 +69,7 @@ export const requestImagePermissions = async () => {
  * Pick image from gallery
  */
 export const pickImageFromGallery = async () => {
-  const hasPermission = await requestImagePermissions();
+  const hasPermission = await requestMediaLibraryPermission();
   if (!hasPermission) return null;
 
   try {
@@ -71,7 +95,7 @@ export const pickImageFromGallery = async () => {
  * Take photo with camera
  */
 export const takePhotoWithCamera = async () => {
-  const hasPermission = await requestImagePermissions();
+  const hasPermission = await requestCameraPermission();
   if (!hasPermission) return null;
 
   try {
