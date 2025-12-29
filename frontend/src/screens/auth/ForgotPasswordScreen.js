@@ -15,14 +15,15 @@ export default function ForgotPasswordScreen({ navigation }) {
       return;
     }
 
-    if (!email.includes('@')) {
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail.includes('@')) {
       setErrorModal('Please enter a valid email address');
       return;
     }
 
     setLoading(true);
     try {
-      const response = await authAPI.forgotPassword(email);
+      const response = await authAPI.forgotPassword(trimmedEmail);
       setSuccessModal(true);
     } catch (error) {
       setErrorModal(error.message || 'Failed to send OTP. Please try again.');
@@ -33,7 +34,7 @@ export default function ForgotPasswordScreen({ navigation }) {
 
   const handleSuccessClose = () => {
     setSuccessModal(false);
-    navigation.navigate('ResetPassword', { email });
+    navigation.navigate('ResetPassword', { email: email.trim() });
   };
 
   return (

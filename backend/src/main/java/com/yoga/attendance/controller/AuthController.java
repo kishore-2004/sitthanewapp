@@ -120,12 +120,12 @@ public class AuthController {
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> request) {
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
         try {
             return ResponseEntity.ok(authService.resetPassword(
-                    request.get("email"),
-                    request.get("otp"),
-                    request.get("newPassword")));
+                    request.getEmail(),
+                    request.getOtp(),
+                    request.getNewPassword()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }

@@ -13,17 +13,7 @@ export default function ResetPasswordScreen({ route, navigation }) {
   const [successModal, setSuccessModal] = useState(false);
 
   const validatePassword = (pwd) => {
-    const minLength = 8;
-    const hasUpper = /[A-Z]/.test(pwd);
-    const hasLower = /[a-z]/.test(pwd);
-    const hasNumber = /[0-9]/.test(pwd);
-    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(pwd);
-    
-    if (pwd.length < minLength) return 'Password must be at least 8 characters';
-    if (!hasUpper) return 'Password must contain an uppercase letter';
-    if (!hasLower) return 'Password must contain a lowercase letter';
-    if (!hasNumber) return 'Password must contain a number';
-    if (!hasSpecial) return 'Password must contain a special character';
+    if (pwd.length < 8) return 'Password must be at least 8 characters';
     return null;
   };
 
@@ -33,7 +23,8 @@ export default function ResetPasswordScreen({ route, navigation }) {
       return;
     }
 
-    if (otp.length !== 6) {
+    const trimmedOtp = otp.trim();
+    if (trimmedOtp.length !== 6) {
       setErrorModal('OTP must be 6 digits');
       return;
     }
@@ -51,10 +42,10 @@ export default function ResetPasswordScreen({ route, navigation }) {
 
     setLoading(true);
     try {
-      await authAPI.resetPassword(email, otp, newPassword);
+      await authAPI.resetPassword(email, trimmedOtp, newPassword);
       setSuccessModal(true);
     } catch (error) {
-      setErrorModal(error.message);
+      setErrorModal(error.message || 'Failed to reset password. Please try again.');
     } finally {
       setLoading(false);
     }

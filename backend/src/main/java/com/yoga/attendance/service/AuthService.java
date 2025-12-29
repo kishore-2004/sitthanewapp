@@ -171,8 +171,14 @@ public class AuthService {
     }
 
     public Map<String, String> forgotPassword(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            throw new RuntimeException("Email is required");
+        }
+        
+        email = email.trim();
+        
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Email not found"));
+                .orElseThrow(() -> new RuntimeException("No account found with this email address"));
 
         String otp = String.format("%06d", secureRandom.nextInt(1000000));
         user.setResetOtp(otp);
@@ -205,7 +211,22 @@ public class AuthService {
         System.out.println("Email: " + email);
         System.out.println("OTP provided: " + otp);
         
-        User user = userRepository.findByEmail(email)
+        if (email == null || email.trim().isEmpty()) {
+            System.err.println("❌ Email is required");
+            throw new RuntimeException("Email is required");
+        }
+        
+        if (otp == null || otp.trim().isEmpty()) {
+            System.err.println("❌ OTP is required");
+            throw new RuntimeException("OTP is required");
+        }
+        
+        if (newPassword == null || newPassword.trim().isEmpty()) {
+            System.err.println("❌ New password is required");
+            throw new RuntimeException("New password is required");
+        }
+        
+        User user = userRepository.findByEmail(email.trim())
                 .orElseThrow(() -> {
                     System.err.println("❌ Email not found: " + email);
                     return new RuntimeException("Email not found");
@@ -215,18 +236,21 @@ public class AuthService {
         System.out.println("Stored OTP: " + user.getResetOtp());
         System.out.println("OTP Expiry: " + user.getResetOtpExpiry());
 
-        if (user.getResetOtp() == null || !user.getResetOtp().equals(otp)) {
+        if (user.getResetOtp() == null || !user.getResetOtp().equals(otp.trim())) {
             System.err.println("❌ Invalid OTP");
-            throw new RuntimeException("Invalid OTP");
+            throw new RuntimeException("Invalid OTP. Please check and try again.");
         }
 
         if (user.getResetOtpExpiry().isBefore(java.time.LocalDateTime.now())) {
             System.err.println("❌ OTP expired");
-            throw new RuntimeException("OTP expired");
+            user.setResetOtp(null);
+            user.setResetOtpExpiry(null);
+            userRepository.save(user);
+            throw new RuntimeException("OTP has expired. Please request a new one.");
         }
 
         // Validate new password
-        if (newPassword == null || newPassword.length() < 8) {
+        if (newPassword.length() < 8) {
             System.err.println("❌ Password too short");
             throw new RuntimeException("Password must be at least 8 characters");
         }

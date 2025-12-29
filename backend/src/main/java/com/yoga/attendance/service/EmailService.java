@@ -50,8 +50,8 @@ public class EmailService {
         System.out.println("==========================\n");
 
         try {
-            if (to == null || !to.contains("@")) {
-                System.err.println("✗ Invalid email format");
+            if (to == null || to.trim().isEmpty() || !to.contains("@")) {
+                System.err.println("✗ Invalid email format: " + to);
                 return false;
             }
 
@@ -59,7 +59,7 @@ public class EmailService {
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
             helper.setFrom(fromEmail);
-            helper.setTo(to);
+            helper.setTo(to.trim());
             helper.setSubject("Sittha Viruthi Yoga - Reset Password OTP");
             helper.setText(getResetOtpTemplate(otp), true);
 
@@ -68,8 +68,13 @@ public class EmailService {
             System.out.println("✓ Password reset OTP email sent successfully to: " + to);
             return true;
 
+        } catch (MessagingException e) {
+            System.err.println("✗ Email sending failed (MessagingException): " + e.getMessage());
+            e.printStackTrace();
+            return false;
         } catch (Exception e) {
-            System.err.println("✗ Email sending failed: " + e.getMessage());
+            System.err.println("✗ Email sending failed (Exception): " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }
