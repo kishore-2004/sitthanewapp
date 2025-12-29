@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import jakarta.mail.MessagingException;
@@ -26,6 +25,11 @@ public class EmailService {
         System.out.println("==============================\n");
 
         try {
+            if (mailSender == null) {
+                System.err.println("✗ JavaMailSender is not initialized!");
+                return false;
+            }
+            
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
@@ -39,6 +43,7 @@ public class EmailService {
             return true;
         } catch (Exception e) {
             System.err.println("✗ Email sending failed: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }
@@ -47,11 +52,22 @@ public class EmailService {
         System.out.println("\n=== PASSWORD RESET OTP ===");
         System.out.println("To: " + to);
         System.out.println("OTP: " + otp);
+        System.out.println("From Email: " + fromEmail);
         System.out.println("==========================\n");
 
         try {
             if (to == null || to.trim().isEmpty() || !to.contains("@")) {
                 System.err.println("✗ Invalid email format: " + to);
+                return false;
+            }
+
+            if (mailSender == null) {
+                System.err.println("✗ JavaMailSender is not initialized! Check email configuration.");
+                return false;
+            }
+
+            if (fromEmail == null || fromEmail.trim().isEmpty()) {
+                System.err.println("✗ From email is not configured!");
                 return false;
             }
 

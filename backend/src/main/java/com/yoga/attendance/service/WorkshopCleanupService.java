@@ -17,7 +17,23 @@ public class WorkshopCleanupService {
     @Scheduled(fixedRate = 3600000) // Run every hour
     @Transactional
     public void deleteExpiredWorkshops() {
-        workshopRepository.deleteByEndTimeBefore(LocalDateTime.now());
-        System.out.println("Deleted expired workshops at: " + LocalDateTime.now());
+        try {
+            LocalDateTime now = LocalDateTime.now();
+            long countBefore = workshopRepository.count();
+            
+            workshopRepository.deleteByEndTimeBefore(now);
+            
+            long countAfter = workshopRepository.count();
+            long deleted = countBefore - countAfter;
+            
+            if (deleted > 0) {
+                System.out.println("[WorkshopCleanupService] Deleted " + deleted + " expired workshop(s) at: " + now);
+            } else {
+                System.out.println("[WorkshopCleanupService] No expired workshops to delete at: " + now);
+            }
+        } catch (Exception e) {
+            System.err.println("[WorkshopCleanupService] Error cleaning up workshops: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

@@ -17,10 +17,22 @@ public class WorkshopCleanupScheduler {
     @Scheduled(cron = "0 0 * * * *")
     public void deleteExpiredWorkshops() {
         try {
-            workshopRepository.deleteByEndTimeBefore(LocalDateTime.now());
-            System.out.println("Expired workshops cleaned up at: " + LocalDateTime.now());
+            LocalDateTime now = LocalDateTime.now();
+            long countBefore = workshopRepository.count();
+            
+            workshopRepository.deleteByEndTimeBefore(now);
+            
+            long countAfter = workshopRepository.count();
+            long deleted = countBefore - countAfter;
+            
+            if (deleted > 0) {
+                System.out.println("Deleted " + deleted + " expired workshop(s) at: " + now);
+            } else {
+                System.out.println("No expired workshops to delete at: " + now);
+            }
         } catch (Exception e) {
             System.err.println("Error cleaning up workshops: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }
