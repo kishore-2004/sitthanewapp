@@ -1,25 +1,42 @@
 import * as ImagePicker from 'expo-image-picker';
-import { Alert, Platform } from 'react-native';
+import { Alert, Platform, Linking } from 'react-native';
 
 /**
  * Request camera and media library permissions
  */
 export const requestImagePermissions = async () => {
   try {
-    const { status: cameraStatus } = await ImagePicker.requestCameraPermissionsAsync();
-    const { status: mediaStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    const cameraPermission = await ImagePicker.getCameraPermissionsAsync();
+    const mediaPermission = await ImagePicker.getMediaLibraryPermissionsAsync();
+    
+    let cameraStatus = cameraPermission.status;
+    let mediaStatus = mediaPermission.status;
+    
+    if (cameraStatus !== 'granted') {
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      cameraStatus = status;
+    }
+    
+    if (mediaStatus !== 'granted') {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      mediaStatus = status;
+    }
     
     if (cameraStatus !== 'granted' || mediaStatus !== 'granted') {
       Alert.alert(
         'Permission Required',
-        'We need permission to access your camera and photo library to upload images.',
-        [{ text: 'OK' }]
+        'Please enable camera and photo library permissions in your device settings to upload images.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Open Settings', onPress: () => Linking.openSettings() }
+        ]
       );
       return false;
     }
     return true;
   } catch (error) {
     console.error('Permission error:', error);
+    Alert.alert('Error', 'Failed to request permissions. Please try again.');
     return false;
   }
 };
