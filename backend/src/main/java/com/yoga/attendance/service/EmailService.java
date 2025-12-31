@@ -21,7 +21,7 @@ public class EmailService {
     public boolean sendVerificationOtp(String to, String otp) {
         System.out.println("\n=== EMAIL VERIFICATION OTP ===");
         System.out.println("To: " + to);
-        System.out.println("OTP: " + otp);
+        // System.out.println("OTP: " + otp); // Commented out for security
         System.out.println("==============================\n");
 
         try {
@@ -51,7 +51,7 @@ public class EmailService {
     public boolean sendPasswordResetOtp(String to, String otp) {
         System.out.println("\n=== PASSWORD RESET OTP ===");
         System.out.println("To: " + to);
-        System.out.println("OTP: " + otp);
+        // System.out.println("OTP: " + otp); // Commented out for security
         System.out.println("From Email: " + fromEmail);
         System.out.println("==========================\n");
 

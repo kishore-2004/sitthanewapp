@@ -170,6 +170,7 @@ public class AuthService {
         return Map.of("message", "Registration successful. Please wait for admin approval.");
     }
 
+    @Transactional
     public Map<String, String> forgotPassword(String email) {
         if (email == null || email.trim().isEmpty()) {
             throw new RuntimeException("Email is required");
@@ -189,7 +190,7 @@ public class AuthService {
         System.out.println("\n========================================");
         System.out.println("PASSWORD RESET OTP GENERATED");
         System.out.println("Email: " + email);
-        System.out.println("OTP: " + otp);
+        // System.out.println("OTP: " + otp); // Commented out for security
         System.out.println("Expires: " + user.getResetOtpExpiry());
         System.out.println("========================================\n");
 
@@ -206,10 +207,11 @@ public class AuthService {
     }
 
 
+    @Transactional
     public Map<String, String> resetPassword(String email, String otp, String newPassword) {
         System.out.println("\n=== PASSWORD RESET ATTEMPT ===");
         System.out.println("Email: " + email);
-        System.out.println("OTP provided: " + otp);
+        // System.out.println("OTP provided: " + otp); // Commented out for security
         
         if (email == null || email.trim().isEmpty()) {
             System.err.println("❌ Email is required");
@@ -233,7 +235,7 @@ public class AuthService {
                 });
 
         System.out.println("User found: " + user.getUsername());
-        System.out.println("Stored OTP: " + user.getResetOtp());
+        // System.out.println("Stored OTP: " + user.getResetOtp()); // Commented out for security
         System.out.println("OTP Expiry: " + user.getResetOtpExpiry());
 
         if (user.getResetOtp() == null || !user.getResetOtp().equals(otp.trim())) {
