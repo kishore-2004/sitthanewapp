@@ -15,7 +15,7 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    @Value("${app.email.from}")
+    @Value("${spring.mail.username}")
     private String fromEmail;
 
     public boolean sendVerificationOtp(String to, String otp) {
