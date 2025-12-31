@@ -3,21 +3,23 @@ import { Alert, Platform, Linking } from 'react-native';
 
 /**
  * Request media library permission for gallery access
+ * Important: This works for both Expo Go and production APK builds
  */
 export const requestMediaLibraryPermission = async () => {
   try {
-    const mediaPermission = await ImagePicker.getMediaLibraryPermissionsAsync();
-    let mediaStatus = mediaPermission.status;
+    // First check current permission status
+    const { status: currentStatus, canAskAgain } = await ImagePicker.getMediaLibraryPermissionsAsync();
 
-    if (mediaStatus !== 'granted') {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      mediaStatus = status;
+    // If already granted, return true
+    if (currentStatus === 'granted') {
+      return true;
     }
 
-    if (mediaStatus !== 'granted') {
+    // If permission was denied and we can't ask again (user selected "Don't ask again")
+    if (currentStatus === 'denied' && !canAskAgain) {
       Alert.alert(
         'Permission Required',
-        'Please enable photo library permissions in your device settings to upload images.',
+        'Photo library access was previously denied. Please enable it in your device settings to upload images.',
         [
           { text: 'Cancel', style: 'cancel' },
           { text: 'Open Settings', onPress: () => Linking.openSettings() }
@@ -25,7 +27,26 @@ export const requestMediaLibraryPermission = async () => {
       );
       return false;
     }
-    return true;
+
+    // Request permission
+    const { status: newStatus, canAskAgain: canAskAgainAfter } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (newStatus === 'granted') {
+      return true;
+    }
+
+    // Permission denied
+    Alert.alert(
+      'Permission Required',
+      canAskAgainAfter
+        ? 'Please allow photo library access to upload images.'
+        : 'Please enable photo library permissions in your device settings to upload images.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Open Settings', onPress: () => Linking.openSettings() }
+      ]
+    );
+    return false;
   } catch (error) {
     console.error('Media library permission error:', error);
     Alert.alert('Error', 'Failed to request media library permission. Please try again.');
@@ -35,21 +56,23 @@ export const requestMediaLibraryPermission = async () => {
 
 /**
  * Request camera permission for camera access
+ * Important: This works for both Expo Go and production APK builds
  */
 export const requestCameraPermission = async () => {
   try {
-    const cameraPermission = await ImagePicker.getCameraPermissionsAsync();
-    let cameraStatus = cameraPermission.status;
+    // First check current permission status
+    const { status: currentStatus, canAskAgain } = await ImagePicker.getCameraPermissionsAsync();
 
-    if (cameraStatus !== 'granted') {
-      const { status } = await ImagePicker.requestCameraPermissionsAsync();
-      cameraStatus = status;
+    // If already granted, return true
+    if (currentStatus === 'granted') {
+      return true;
     }
 
-    if (cameraStatus !== 'granted') {
+    // If permission was denied and we can't ask again (user selected "Don't ask again")
+    if (currentStatus === 'denied' && !canAskAgain) {
       Alert.alert(
         'Permission Required',
-        'Please enable camera permissions in your device settings to take photos.',
+        'Camera access was previously denied. Please enable it in your device settings to take photos.',
         [
           { text: 'Cancel', style: 'cancel' },
           { text: 'Open Settings', onPress: () => Linking.openSettings() }
@@ -57,7 +80,26 @@ export const requestCameraPermission = async () => {
       );
       return false;
     }
-    return true;
+
+    // Request permission
+    const { status: newStatus, canAskAgain: canAskAgainAfter } = await ImagePicker.requestCameraPermissionsAsync();
+
+    if (newStatus === 'granted') {
+      return true;
+    }
+
+    // Permission denied
+    Alert.alert(
+      'Permission Required',
+      canAskAgainAfter
+        ? 'Please allow camera access to take photos.'
+        : 'Please enable camera permissions in your device settings to take photos.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Open Settings', onPress: () => Linking.openSettings() }
+      ]
+    );
+    return false;
   } catch (error) {
     console.error('Camera permission error:', error);
     Alert.alert('Error', 'Failed to request camera permission. Please try again.');

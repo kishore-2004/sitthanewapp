@@ -136,10 +136,37 @@ export default function ChemsingDashboard({ navigation, route }) {
 
   const pickHealingImage = async () => {
     try {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permission Required', 'Please enable photo library permissions in your device settings to upload images.');
-        return;
+      // Check current permission status
+      const { status: currentStatus, canAskAgain } = await ImagePicker.getMediaLibraryPermissionsAsync();
+
+      // If already granted, proceed
+      if (currentStatus !== 'granted') {
+        // If can't ask again, direct to settings
+        if (currentStatus === 'denied' && !canAskAgain) {
+          Alert.alert(
+            'Permission Required',
+            'Photo library access was previously denied. Please enable it in your device settings to upload images.',
+            [
+              { text: 'Cancel', style: 'cancel' },
+              { text: 'Open Settings', onPress: () => Linking.openSettings() }
+            ]
+          );
+          return;
+        }
+
+        // Request permission
+        const { status: newStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (newStatus !== 'granted') {
+          Alert.alert(
+            'Permission Required',
+            'Please enable photo library permissions to upload images.',
+            [
+              { text: 'Cancel', style: 'cancel' },
+              { text: 'Open Settings', onPress: () => Linking.openSettings() }
+            ]
+          );
+          return;
+        }
       }
 
       // Using string literal to avoid deprecation warning and undefined crash
@@ -155,7 +182,7 @@ export default function ChemsingDashboard({ navigation, route }) {
       }
     } catch (error) {
       console.error('Error in pickHealingImage:', error);
-      alert('Error picking image: ' + error.message);
+      Alert.alert('Error', 'Error picking image: ' + error.message);
     }
   };
 
@@ -459,12 +486,41 @@ export default function ChemsingDashboard({ navigation, route }) {
   const pickProfileImage = async () => {
     try {
       console.log('Requesting permission...');
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      console.log('Permission status:', status);
 
-      if (status !== 'granted') {
-        Alert.alert('Permission Required', 'Please enable photo library permissions in your device settings to upload images.');
-        return;
+      // Check current permission status
+      const { status: currentStatus, canAskAgain } = await ImagePicker.getMediaLibraryPermissionsAsync();
+      console.log('Permission status:', currentStatus, 'canAskAgain:', canAskAgain);
+
+      // If already granted, proceed
+      if (currentStatus !== 'granted') {
+        // If can't ask again, direct to settings
+        if (currentStatus === 'denied' && !canAskAgain) {
+          Alert.alert(
+            'Permission Required',
+            'Photo library access was previously denied. Please enable it in your device settings to upload images.',
+            [
+              { text: 'Cancel', style: 'cancel' },
+              { text: 'Open Settings', onPress: () => Linking.openSettings() }
+            ]
+          );
+          return;
+        }
+
+        // Request permission
+        const { status: newStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        console.log('New permission status:', newStatus);
+
+        if (newStatus !== 'granted') {
+          Alert.alert(
+            'Permission Required',
+            'Please enable photo library permissions to upload images.',
+            [
+              { text: 'Cancel', style: 'cancel' },
+              { text: 'Open Settings', onPress: () => Linking.openSettings() }
+            ]
+          );
+          return;
+        }
       }
 
       console.log('Launching image picker...');
