@@ -48,7 +48,12 @@
       "enableProguardInReleaseBuilds": true,
       "enableShrinkResourcesInReleaseBuilds": true,
       "enableDangerousExperimentalLeanBuilds": true,
-      "usesCleartextTraffic": true
+      "enableAbiSplit": true,
+      "enablePngCrushInReleaseBuilds": true,
+      "minSdkVersion": 24,
+      "targetSdkVersion": 34,
+      "usesCleartextTraffic": true,
+      "versionCode": 1
     },
     "scheme": "myapp",
     "plugins": [
